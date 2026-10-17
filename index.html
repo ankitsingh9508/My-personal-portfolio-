@@ -1672,7 +1672,7 @@ body:not(.light) .logo-name b {
             </div>
             <div class="field">
               <label for="email">Your email</label>
-              <input id="email" name="email" type="email" placeholder="ankukumar62076@gmail.com" required>
+              <input id="email" name="email" type="email" placeholder="email@example.com" required>
             </div>
           </div>
           <div class="field">
@@ -1723,6 +1723,10 @@ body:not(.light) .logo-name b {
 <a class="back-top" id="backTop" href="#home" aria-label="Back to top">
   <i class="fa-solid fa-arrow-up"></i>
 </a>
+
+<script
+src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+></script>
 
 <script>
 // =======================================
@@ -1851,28 +1855,38 @@ filterButtons.forEach(button => {
 // =======================================
 // CONTACT FORM: PREPARE AN EMAIL
 // =======================================
-document.getElementById("contactForm").addEventListener("submit", event => {
-  event.preventDefault();
-
-
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const subject = document.getElementById("subject").value.trim();
-  const message = document.getElementById("message").value.trim();
-const body =
-  "Name: " + name +
-    "\nEmail: " + email +
-    "\n\nMessage:\n" + message;
-
-  const gmailURL =
-    "https://mail.google.com/mail/?view=cm&fs=1" +
-    "&to=ankukumar62076@gmail.com" +
-    "&su=" + encodeURIComponent(subject) +
-    "&body=" + encodeURIComponent(body);
-
-  window.open(gmailURL, "_blank");
-
+emailjs.init({
+    publicKey: "XSsXg5EEu4pfQ_Nww"
 });
+
+document.getElementById("contactForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const formMessage = document.getElementById("formMessage");
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Sending...";
+
+    try {
+        await emailjs.sendForm(
+            "service_jtudm96",
+            "template_hhtrw3s",
+            form
+        );
+
+        formMessage.textContent = "Message sent successfully!";
+        form.reset();
+    } catch (error) {
+        console.error("EmailJS error:", error);
+        formMessage.textContent = "Message could not be sent. Please try again.";
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Submit";
+    }
+});
+
 
 // =======================================
 // GOOGLE FORM EMBED
